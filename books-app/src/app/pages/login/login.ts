@@ -1,11 +1,32 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { AuthService } from '../../core/auth';
 
 @Component({
   selector: 'app-login',
-  imports: [],
+  standalone: true,
+  imports: [FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class LoginComponent {
+  username = '';
+  password = '';
+  loading = false;
+  error = '';
 
+  constructor(private http: HttpClient, private router: Router, private auth: AuthService) {}
+
+  login() {
+    this.loading = true; this.error = '';
+    this.http.post<{token:string}>(`${this.auth.apiBase}/api/auth/login`, {
+      username: this.username, password: this.password
+    }).subscribe({
+      next: res => { this.auth.token = res.token; this.router.navigateByUrl('/books'); },
+      error: () => this.error = 'Invalid username or password',
+      complete: () => this.loading = false
+    });
+  }
 }

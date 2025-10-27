@@ -1,1 +1,17 @@
-<p>login works!</p>
+<div class="row justify-content-center">
+  <div class="col-md-4">
+    <h3>Log in</h3>
+    <form (ngSubmit)="login()" #f="ngForm">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input class="form-control" [(ngModel)]="username" name="username" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input class="form-control" type="password" [(ngModel)]="password" name="password" required>
+      </div>
+      <button class="btn btn-primary" [disabled]="loading">Log in</button>
+      <div class="text-danger mt-2" *ngIf="error">{{ error }}</div>
+    </form>
+  </div>
+</div>

@@ -35,10 +35,10 @@ builder.Services.AddSwaggerGen();
 // CORS – tillåt Angular dev
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+    options.AddPolicy("dev", p =>
+        p.WithOrigins("http://localhost:4200")
+         .AllowAnyHeader()
+         .AllowAnyMethod());
     // OBS: .AllowCredentials() kräver specifik origin och särskild hantering.
 });
 
@@ -47,8 +47,8 @@ var nextId = 1;
 
 var app = builder.Build();
 
-app.UseCors();               // lägg CORS TIDIGT
-// app.UseHttpsRedirection(); // hoppar över https i dev
+app.UseCors("dev");
+// app.UseHttpsRedirection(); 
 
 if (app.Environment.IsDevelopment())
 {
@@ -58,6 +58,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapMethods("/api/{**any}", new[] { "OPTIONS" }, () => Results.Ok())
+   .AllowAnonymous();
 
 app.MapGet("/", () => "Books API up");
 
