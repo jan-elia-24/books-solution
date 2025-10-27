@@ -5,17 +5,24 @@
     </a>
 
     <!-- Toggler (mobil) -->
-    <button class="navbar-toggler" type="button" (click)="toggleMenu()" aria-label="Toggle navigation">
-  <i class="fa fa-otter"></i>
-</button>
-
-
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="toggleMenu()"
+      aria-label="Toggle navigation"
+    >
+      <i class="fa fa-otter"></i>
+    </button>
 
     <!-- Collapsible area -->
     <div class="collapse navbar-collapse" [class.show]="menuOpen">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" routerLink="/books" (click)="closeMenu()">Books</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/quotes" (click)="closeMenu()">My Quotes</a></li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/books" (click)="closeMenu()">Books</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/quotes" (click)="closeMenu()">My Quotes</a>
+        </li>
       </ul>
 
       <div class="d-flex gap-2 align-items-center">
@@ -23,11 +30,21 @@
           <i class="fa fa-moon"></i>
         </button>
 
-        <a *ngIf="auth.isLoggedIn()" class="btn btn-primary" routerLink="/books/new" (click)="closeMenu()">
+        <a
+          *ngIf="auth.isLoggedIn()"
+          class="btn btn-primary"
+          routerLink="/books/new"
+          (click)="closeMenu()"
+        >
           <i class="fa fa-plus"></i> New book
         </a>
 
-        <a *ngIf="!auth.isLoggedIn()" class="btn btn-outline-primary" routerLink="/login" (click)="closeMenu()">
+        <a
+          *ngIf="!auth.isLoggedIn()"
+          class="btn btn-outline-primary"
+          routerLink="/login"
+          (click)="closeMenu()"
+        >
           <i class="fa fa-user"></i> Log in
         </a>
         <button *ngIf="auth.isLoggedIn()" class="btn btn-outline-danger" (click)="logout()">
