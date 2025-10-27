@@ -1,14 +1,18 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../core/auth';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [],
+  imports: [RouterLink, CommonModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss'
 })
 export class NavbarComponent {
+  constructor(public auth: AuthService, private router: Router) {}
+
   ngOnInit() {
     const saved = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-bs-theme', saved);
@@ -19,5 +23,9 @@ export class NavbarComponent {
     const next = curr === 'light' ? 'dark' : 'light';
     root.setAttribute('data-bs-theme', next);
     localStorage.setItem('theme', next);
+  }
+  logout() {
+    this.auth.logout();
+    this.router.navigateByUrl('/login');
   }
 }

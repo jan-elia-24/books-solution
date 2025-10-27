@@ -1,8 +1,23 @@
 <nav class="navbar navbar-expand bg-body-tertiary border-bottom">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#"><i class="fa fa-book"></i> Books</a>
+    <a class="navbar-brand" routerLink="/books"><i class="fa fa-book"></i> Books</a>
+
+    <div class="d-flex ms-auto gap-2">
+      <button class="btn btn-outline-secondary" (click)="toggleTheme()" title="Light/Dark">
+        <i class="fa fa-moon"></i>
+      </button>
+
+      <a *ngIf="auth.isLoggedIn()" class="btn btn-primary" routerLink="/books/new">
+        <i class="fa fa-plus"></i> New book
+      </a>
+
+      <a *ngIf="!auth.isLoggedIn()" class="btn btn-outline-primary" routerLink="/login">
+        <i class="fa fa-user"></i> Log in
+      </a>
+
+      <button *ngIf="auth.isLoggedIn()" class="btn btn-outline-danger" (click)="logout()">
+        <i class="fa fa-sign-out-alt"></i> Log out
+      </button>
+    </div>
   </div>
-  <button class="btn btn-outline-secondary me-2" (click)="toggleTheme()" title="Light/Dark">
-    <i class="fa fa-moon"></i>
-  </button>
 </nav>
