@@ -11,6 +11,9 @@ import { AuthService } from '../../core/auth';
   styleUrl: './navbar.scss'
 })
 export class NavbarComponent {
+  menuOpen = false;
+
+
   constructor(public auth: AuthService, private router: Router) {}
 
   ngOnInit() {
@@ -27,5 +30,12 @@ export class NavbarComponent {
   logout() {
     this.auth.logout();
     this.router.navigateByUrl('/login');
+  }
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+  closeMenu() {
+    this.menuOpen = false;
   }
 }

@@ -1,23 +1,39 @@
-<nav class="navbar navbar-expand bg-body-tertiary border-bottom">
+<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom">
   <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/books"><i class="fa fa-book"></i> Books</a>
+    <a class="navbar-brand" routerLink="/books" (click)="closeMenu()">
+      <i class="fa fa-book"></i> Books
+    </a>
 
-    <div class="d-flex ms-auto gap-2">
-      <button class="btn btn-outline-secondary" (click)="toggleTheme()" title="Light/Dark">
-        <i class="fa fa-moon"></i>
-      </button>
+    <!-- Toggler (mobil) -->
+    <button class="navbar-toggler" type="button" (click)="toggleMenu()" aria-label="Toggle navigation">
+  <i class="fa fa-otter"></i>
+</button>
 
-      <a *ngIf="auth.isLoggedIn()" class="btn btn-primary" routerLink="/books/new">
-        <i class="fa fa-plus"></i> New book
-      </a>
 
-      <a *ngIf="!auth.isLoggedIn()" class="btn btn-outline-primary" routerLink="/login">
-        <i class="fa fa-user"></i> Log in
-      </a>
 
-      <button *ngIf="auth.isLoggedIn()" class="btn btn-outline-danger" (click)="logout()">
-        <i class="fa fa-sign-out-alt"></i> Log out
-      </button>
+    <!-- Collapsible area -->
+    <div class="collapse navbar-collapse" [class.show]="menuOpen">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" routerLink="/books" (click)="closeMenu()">Books</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/quotes" (click)="closeMenu()">My Quotes</a></li>
+      </ul>
+
+      <div class="d-flex gap-2 align-items-center">
+        <button class="btn btn-outline-secondary" (click)="toggleTheme()" title="Light/Dark">
+          <i class="fa fa-moon"></i>
+        </button>
+
+        <a *ngIf="auth.isLoggedIn()" class="btn btn-primary" routerLink="/books/new" (click)="closeMenu()">
+          <i class="fa fa-plus"></i> New book
+        </a>
+
+        <a *ngIf="!auth.isLoggedIn()" class="btn btn-outline-primary" routerLink="/login" (click)="closeMenu()">
+          <i class="fa fa-user"></i> Log in
+        </a>
+        <button *ngIf="auth.isLoggedIn()" class="btn btn-outline-danger" (click)="logout()">
+          <i class="fa fa-sign-out-alt"></i> Log out
+        </button>
+      </div>
     </div>
   </div>
 </nav>
