@@ -1,4 +1,4 @@
-<h3>New Book</h3>
+<h3>{{ isEdit ? 'Edit Book' : 'New Book' }}</h3>
 <form (ngSubmit)="save()" #f="ngForm" class="mt-3">
   <div class="mb-3">
     <label class="form-label">Title</label>

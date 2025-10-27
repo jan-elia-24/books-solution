@@ -1,11 +1,13 @@
-<h3>Books</h3>
-<div *ngIf="loading">Loading…</div>
-<div class="text-danger" *ngIf="error">{{ error }}</div>
-<div class="text-muted" *ngIf="!loading && books.length === 0">No books yet.</div>
-
 <ul class="list-group" *ngIf="!loading && books.length">
-  <li class="list-group-item" *ngFor="let b of books">
-    <div class="fw-semibold">{{ b.title }}</div>
-    <small class="text-muted">{{ b.author }} • {{ b.publishedDate || 'unknown date' }}</small>
+  <li class="list-group-item d-flex justify-content-between" *ngFor="let b of books">
+    <div>
+      <div class="fw-semibold">{{ b.title }}</div>
+      <small class="text-muted">{{ b.author }} • {{ b.publishedDate || 'unknown date' }}</small>
+    </div>
+    <div class="btn-group">
+      <a class="btn btn-outline-secondary btn-sm" [routerLink]="['/books', b.id, 'edit']">
+        <i class="fa fa-pen"></i> Edit
+      </a>
+    </div>
   </li>
 </ul>
