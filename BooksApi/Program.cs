@@ -36,7 +36,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("dev", p => p
-        .AllowAnyOrigin() // OBS: I produktion, specificera exakta origin
+        .WithOrigins("https://bookbreeze-rust.vercel.app/login") 
         .AllowAnyHeader()
         .AllowAnyMethod());
     // OBS: .AllowCredentials() kräver specifik origin och särskild hantering.
