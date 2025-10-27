@@ -4,6 +4,7 @@ import { BooksListComponent } from './pages/books-list/books-list';
 import { BookFormComponent } from './pages/book-form/book-form';
 import { QuotesComponent } from './pages/quotes/quotes';
 import { authGuard } from './core/auth-guard';
+import { NotFoundComponent } from './pages/not-found/not-found';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -13,4 +14,5 @@ export const routes: Routes = [
   { path: 'quotes', component: QuotesComponent },
   { path: '', pathMatch: 'full', redirectTo: 'books' },
   { path: '**', redirectTo: 'books' },
+  { path: '**', component: NotFoundComponent },
 ];
