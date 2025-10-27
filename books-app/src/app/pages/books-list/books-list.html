@@ -1,1 +1,11 @@
-<p>books-list works!</p>
+<h3>Books</h3>
+<div *ngIf="loading">Loading…</div>
+<div class="text-danger" *ngIf="error">{{ error }}</div>
+<div class="text-muted" *ngIf="!loading && books.length === 0">No books yet.</div>
+
+<ul class="list-group" *ngIf="!loading && books.length">
+  <li class="list-group-item" *ngFor="let b of books">
+    <div class="fw-semibold">{{ b.title }}</div>
+    <small class="text-muted">{{ b.author }} • {{ b.publishedDate || 'unknown date' }}</small>
+  </li>
+</ul>

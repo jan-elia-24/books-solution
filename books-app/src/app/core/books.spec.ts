@@ -1,13 +1,22 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { BooksService } from './books';
+import { AuthService } from './auth';
 
-import { Books } from './books';
+class MockAuthService { apiBase = 'http://localhost:5000'; }
 
-describe('Books', () => {
-  let service: Books;
+describe('BooksService', () => {
+  let service: BooksService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(Books);
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        { provide: AuthService, useClass: MockAuthService },
+        BooksService,
+      ],
+    });
+    service = TestBed.inject(BooksService);
   });
 
   it('should be created', () => {

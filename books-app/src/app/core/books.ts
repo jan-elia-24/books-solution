@@ -8,8 +8,7 @@ export interface BookCreate { title: string; author: string; publishedDate?: str
 @Injectable({ providedIn: 'root' })
 export class BooksService {
   constructor(private http: HttpClient, private auth: AuthService) {}
-
-  private get base() { return `${this.auth.apiBase}/api/books`; }  
+  private get base() { return `${this.auth.apiBase}/api/books`; }
 
   list() { return this.http.get<Book[]>(this.base); }
   get(id: number) { return this.http.get<Book>(`${this.base}/${id}`); }

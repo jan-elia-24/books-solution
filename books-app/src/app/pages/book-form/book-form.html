@@ -1,1 +1,22 @@
-<p>book-form works!</p>
+<h3>New Book</h3>
+<form (ngSubmit)="save()" #f="ngForm" class="mt-3">
+  <div class="mb-3">
+    <label class="form-label">Title</label>
+    <input class="form-control" [(ngModel)]="model.title" name="title" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Author</label>
+    <input class="form-control" [(ngModel)]="model.author" name="author" required>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Published date</label>
+    <input class="form-control" type="date" [(ngModel)]="model.publishedDate" name="publishedDate">
+  </div>
+
+  <button class="btn btn-primary" [disabled]="loading || !f.valid">Save</button>
+  <a class="btn btn-outline-secondary ms-2" routerLink="/books">Cancel</a>
+
+  <div class="text-danger mt-2" *ngIf="error">{{ error }}</div>
+</form>
