@@ -8,6 +8,9 @@
       <a class="btn btn-outline-secondary btn-sm" [routerLink]="['/books', b.id, 'edit']">
         <i class="fa fa-pen"></i> Edit
       </a>
+      <button class="btn btn-outline-danger btn-sm" (click)="remove(b)">
+        <i class="fa fa-trash"></i> Delete
+      </button>
     </div>
   </li>
 </ul>

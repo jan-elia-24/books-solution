@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BooksService, Book } from '../../core/books';
+import { BooksService, Book } from '../../core/books'; 
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -18,11 +18,24 @@ export class BooksListComponent {
   constructor(private api: BooksService) {}
 
   ngOnInit() {
-    this.loading = true;
+    this.load();
+  }
+
+  private load() {
+    this.loading = true; this.error = '';
     this.api.list().subscribe({
       next: res => this.books = res,
       error: () => this.error = 'Failed to load books',
       complete: () => this.loading = false
+    });
+  }
+
+  remove(b: Book) {
+    if (!confirm(`Delete "${b.title}"?`)) return;
+    this.loading = true;
+    this.api.remove(b.id).subscribe({
+      next: () => this.load(),
+      error: () => { this.loading = false; this.error = 'Failed to delete'; }
     });
   }
 }
