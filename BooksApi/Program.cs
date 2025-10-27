@@ -35,10 +35,10 @@ builder.Services.AddSwaggerGen();
 // CORS – tillåt Angular dev
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("dev", p =>
-        p.WithOrigins("http://localhost:4200")
-         .AllowAnyHeader()
-         .AllowAnyMethod());
+    options.AddPolicy("dev", p => p
+        .AllowAnyOrigin() // OBS: I produktion, specificera exakta origin
+        .AllowAnyHeader()
+        .AllowAnyMethod());
     // OBS: .AllowCredentials() kräver specifik origin och särskild hantering.
 });
 
