@@ -38,4 +38,7 @@ export class BooksListComponent {
       error: () => { this.loading = false; this.error = 'Failed to delete'; }
     });
   }
+
+  trackById = (_: number, b: Book) => b.id;
+
 }
