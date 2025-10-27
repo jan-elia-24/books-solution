@@ -35,11 +35,17 @@ builder.Services.AddSwaggerGen();
 // CORS – tillåt Angular dev
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("dev", p => p
-        .WithOrigins("https://bookbreeze-rust.vercel.app/login") 
+    // Prod: tillåt Vercel-domäner + localhost (dev)
+    options.AddPolicy("web", p => p                       
+        .SetIsOriginAllowed(origin =>
+        {
+            if (string.IsNullOrEmpty(origin)) return false;
+            var host = new Uri(origin).Host.ToLowerInvariant();
+            return host == "localhost" || host.EndsWith(".vercel.app");
+        })
         .AllowAnyHeader()
-        .AllowAnyMethod());
-    // OBS: .AllowCredentials() kräver specifik origin och särskild hantering.
+        .AllowAnyMethod()
+    );
 });
 
 var books = new Dictionary<int, BookDto>();
@@ -47,7 +53,7 @@ var nextId = 1;
 
 var app = builder.Build();
 
-app.UseCors("dev");
+app.UseCors("web");
 // app.UseHttpsRedirection(); 
 
 if (app.Environment.IsDevelopment())
