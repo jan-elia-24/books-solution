@@ -33,19 +33,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // CORS – tillåt Angular dev
-builder.Services.AddCors(options =>
+builder.Services.AddCors(opt =>
 {
-    // Prod: tillåt Vercel-domäner + localhost (dev)
-    options.AddPolicy("web", p => p                       
-        .SetIsOriginAllowed(origin =>
-        {
-            if (string.IsNullOrEmpty(origin)) return false;
-            var host = new Uri(origin).Host.ToLowerInvariant();
-            return host == "localhost" || host.EndsWith(".vercel.app");
-        })
+    opt.AddPolicy("web", p => p
+        .WithOrigins("https://bookbreeze.vercel.app") 
         .AllowAnyHeader()
-        .AllowAnyMethod()
-    );
+        .AllowAnyMethod());
 });
 
 var books = new Dictionary<int, BookDto>();
