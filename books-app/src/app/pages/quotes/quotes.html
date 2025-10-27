@@ -1,1 +1,6 @@
-<p>quotes works!</p>
+<h3>My Quotes</h3>
+<ul class="list-group mt-3">
+  <li class="list-group-item" *ngFor="let q of quotes">
+    <i class="fa fa-quote-left me-2"></i>{{ q }}
+  </li>
+</ul>
