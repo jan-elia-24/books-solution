@@ -3,7 +3,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using BooksApi; // för våra record-typer i Dtos.cs
+using BooksApi; 
+using BCrypt.Net; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,13 +37,21 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("web", p => p
-        .WithOrigins("https://bookbreeze.vercel.app") 
+        .WithOrigins("http://localhost:4200", "https://bookbreeze.vercel.app") 
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
 
 var books = new Dictionary<int, BookDto>();
 var nextId = 1;
+
+// In-memory users
+var users = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); 
+// key: username, value: passwordHash
+
+// In-memory quotes
+var quotes = new Dictionary<int, QuoteDto>();
+var nextQuoteId = 1;
 
 var app = builder.Build();
 
@@ -64,9 +73,35 @@ app.MapMethods("/api/{**any}", new[] { "OPTIONS" }, () => Results.Ok())
 app.MapGet("/", () => "Books API up");
 
 // ===== Auth =====
+
+// register-endpoint
+app.MapPost("/api/auth/register", (LoginDto dto) =>
+{
+    if (string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
+        return Results.BadRequest("Username and password are required");
+
+    if (users.ContainsKey(dto.Username))
+        return Results.Conflict("Username already exists");
+
+    // Hash password
+    var hash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+    users[dto.Username] = hash;
+
+    // Auto-login on success (return token)
+    var token = CreateToken(dto.Username, signingKey);
+    return Results.Ok(new { token, username = dto.Username });
+});
+
+// Login endpoint that works with both "admin/pass123" and registered users
 app.MapPost("/api/auth/login", (LoginDto dto) =>
 {
-    if (dto.Username == "admin" && dto.Password == "pass123")
+    // allow the original demo account
+    var isDemo = dto.Username == "admin" && dto.Password == "pass123";
+
+    // or a registered user (if exists + hash ok)
+    var isUser = users.TryGetValue(dto.Username, out var hash) && BCrypt.Net.BCrypt.Verify(dto.Password, hash);
+
+    if (isDemo || isUser)
     {
         var token = CreateToken(dto.Username, signingKey);
         return Results.Ok(new { token, username = dto.Username });
@@ -141,4 +176,12 @@ static string CreateToken(string username, SymmetricSecurityKey key)
     );
 
     return new JwtSecurityTokenHandler().WriteToken(jwt);
+}
+
+// QuoteDto
+record QuoteDto
+{
+    public int Id { get; init; }
+    public string Text { get; init; } = "";
+    public string Owner { get; init; } = ""; // username from JWT
 }
