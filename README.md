@@ -2,6 +2,8 @@
 
 A simple full‑stack example with an Angular frontend and a .NET 9 Minimal API backend. Authentication uses JWT. Books are stored in memory (no database).
 
+![BookBreeze Screenshot](./screenshot-bookbreeze.png)
+
 ## Structure
 - `BooksApi/` – .NET 9 Minimal API (JWT auth, CRUD at `/api/books`)
 - `books-app/` – Angular 20 SPA (login, books list/create/edit/delete, quotes, dark mode)
