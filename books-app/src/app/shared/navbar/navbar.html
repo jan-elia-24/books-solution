@@ -30,14 +30,6 @@
           <i class="fa fa-moon"></i>
         </button>
 
-        <a
-          *ngIf="auth.isLoggedIn()"
-          class="btn btn-primary"
-          routerLink="/books/new"
-          (click)="closeMenu()"
-        >
-          <i class="fa fa-plus"></i> New book
-        </a>
 
         <a
           *ngIf="!auth.isLoggedIn()"
@@ -47,6 +39,15 @@
         >
           <i class="fa fa-user"></i> Log in
         </a>
+        <a
+          *ngIf="!auth.isLoggedIn()"
+          class="btn btn-outline-secondary"
+          routerLink="/register"
+          (click)="closeMenu()"
+        >
+          <i class="fa fa-user-plus"></i> Register
+        </a>
+
         <button *ngIf="auth.isLoggedIn()" class="btn btn-outline-danger" (click)="logout()">
           <i class="fa fa-sign-out-alt"></i> Log out
         </button>

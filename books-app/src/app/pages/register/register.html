@@ -1,0 +1,27 @@
+<div class="container py-4" style="max-width:560px">
+  <h3 class="mb-3">Create account</h3>
+
+  <form (ngSubmit)="submit()">
+    <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input class="form-control" [(ngModel)]="model.username" name="username" autocomplete="username" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-control" [(ngModel)]="model.password" name="password" autocomplete="new-password" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Confirm password</label>
+      <input type="password" class="form-control" [(ngModel)]="model.confirm" name="confirm" autocomplete="new-password" />
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+    <button class="btn btn-primary" [disabled]="loading">
+      <i class="fa fa-user-plus me-1"></i>
+      {{ loading ? 'Creating...' : 'Create account' }}
+    </button>
+  </form>
+</div>
