@@ -1,6 +1,37 @@
-<h3>My Quotes</h3>
-<ul class="list-group mt-3">
-  <li class="list-group-item" *ngFor="let q of quotes">
-    <i class="fa fa-quote-left me-2"></i>{{ q }}
-  </li>
-</ul>
+<div class="container py-4" style="max-width:720px">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">My Quotes</h3>
+  </div>
+
+  <!-- Add form -->
+  <form class="input-group mb-3" (ngSubmit)="add()">
+    <input class="form-control" placeholder="Write a new quote…" [(ngModel)]="newText" name="text">
+    <button class="btn btn-primary" [disabled]="loading || !newText?.trim()">
+      <i class="fa fa-plus me-1"></i>Add
+    </button>
+  </form>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-muted d-flex align-items-center gap-2 mb-2">
+    <i class="fa fa-spinner fa-spin"></i> Loading…
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="alert alert-danger" role="alert">
+    {{ error }}
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && !error && quotes.length === 0" class="text-center text-muted py-5">
+    <i class="fa fa-quote-left mb-2"></i>
+    <div>No quotes yet – add your first one above.</div>
+  </div>
+
+  <!-- List -->
+  <ul *ngIf="!loading && !error && quotes.length" class="list-group shadow-sm">
+    <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let q of quotes; trackBy: trackById">
+      <div class="me-3">{{ q.text }}</div>
+      <!-- Edit/Delete knappar läggs i nästa steg -->
+    </li>
+  </ul>
+</div>

@@ -1,19 +1,43 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { QuotesService, Quote } from '../../core/quotes';
 
 @Component({
   selector: 'app-quotes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './quotes.html',
   styleUrl: './quotes.scss'
 })
 export class QuotesComponent {
-  quotes = [
-    'Simplicity is the soul of efficiency. — Austin Freeman',
-    'Programs must be written for people to read. — Harold Abelson',
-    'Premature optimization is the root of all evil. — Donald Knuth',
-    'Talk is cheap. Show me the code. — Linus Torvalds',
-    'First, solve the problem. Then, write the code. — John Johnson'
-  ];
+  quotes: Quote[] = [];
+  loading = false;
+  error = '';
+  newText = '';
+
+  constructor(private api: QuotesService) {}
+  trackById = (_: number, q: Quote) => q.id;
+
+
+  ngOnInit() { this.load(); }
+
+  load() {
+    this.loading = true; this.error = '';
+    this.api.list().subscribe({
+      next: res => this.quotes = res,
+      error: () => { this.error = 'Failed to load quotes'; },
+      complete: () => { this.loading = false; }
+    });
+  }
+
+  add() {
+    const text = (this.newText || '').trim();
+    if (!text) return;
+    this.loading = true; this.error = '';
+    this.api.create(text).subscribe({
+      next: () => { this.newText = ''; this.load(); },
+      error: () => { this.error = 'Failed to add quote'; this.loading = false; }
+    });
+  }
 }
