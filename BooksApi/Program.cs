@@ -3,8 +3,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using BooksApi; 
-using BCrypt.Net; 
+using BooksApi;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +32,34 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
 
-// CORS – tillåt Angular dev
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
+// CORS –  Angular dev
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("web", p => p
@@ -156,6 +182,66 @@ app.MapDelete("/api/books/{id:int}", (int id) =>
     return Results.NoContent();
 }).RequireAuthorization();
 
+// ========== QUOTES ENDPOINTS (RequireAuthorization) ==========
+
+// List my quotes
+app.MapGet("/api/quotes", (ClaimsPrincipal user) =>
+{
+    var me = user.Identity?.Name ?? "";
+    var mine = quotes.Values.Where(q => q.Owner.Equals(me, StringComparison.OrdinalIgnoreCase))
+                            .OrderBy(q => q.Id);
+    return Results.Ok(mine);
+}).RequireAuthorization();
+
+// Get single (only if owner)
+app.MapGet("/api/quotes/{id:int}", (int id, ClaimsPrincipal user) =>
+{
+    if (!quotes.TryGetValue(id, out var q)) return Results.NotFound();
+    var me = user.Identity?.Name ?? "";
+    if (!q.Owner.Equals(me, StringComparison.OrdinalIgnoreCase)) return Results.Forbid();
+    return Results.Ok(q);
+}).RequireAuthorization();
+
+// Create
+app.MapPost("/api/quotes", (QuoteCreateDto dto, ClaimsPrincipal user) =>
+{
+    var text = (dto.Text ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(text)) return Results.BadRequest("Text is required");
+
+    var me = user.Identity?.Name ?? "";
+    var q = new QuoteDto { Id = nextQuoteId++, Text = text, Owner = me };
+    quotes[q.Id] = q;
+    return Results.Created($"/api/quotes/{q.Id}", q);
+}).RequireAuthorization();
+
+// Update (only if owner)
+app.MapPut("/api/quotes/{id:int}", (int id, QuoteUpdateDto dto, ClaimsPrincipal user) =>
+{
+    if (!quotes.TryGetValue(id, out var existing)) return Results.NotFound();
+
+    var me = user.Identity?.Name ?? "";
+    if (!existing.Owner.Equals(me, StringComparison.OrdinalIgnoreCase)) return Results.Forbid();
+
+    var text = (dto.Text ?? "").Trim();
+    if (string.IsNullOrWhiteSpace(text)) return Results.BadRequest("Text is required");
+
+    var updated = existing with { Text = text };
+    quotes[id] = updated;
+    return Results.Ok(updated);
+}).RequireAuthorization();
+
+// Delete (only if owner)
+app.MapDelete("/api/quotes/{id:int}", (int id, ClaimsPrincipal user) =>
+{
+    if (!quotes.TryGetValue(id, out var existing)) return Results.NotFound();
+
+    var me = user.Identity?.Name ?? "";
+    if (!existing.Owner.Equals(me, StringComparison.OrdinalIgnoreCase)) return Results.Forbid();
+
+    quotes.Remove(id);
+    return Results.NoContent();
+}).RequireAuthorization();
+
 app.Run();
 
 // ===== Helper =====
@@ -178,10 +264,13 @@ static string CreateToken(string username, SymmetricSecurityKey key)
     return new JwtSecurityTokenHandler().WriteToken(jwt);
 }
 
-// QuoteDto
+// Quote DTOs
 record QuoteDto
 {
     public int Id { get; init; }
     public string Text { get; init; } = "";
     public string Owner { get; init; } = ""; // username from JWT
 }
+
+record QuoteCreateDto(string Text);
+record QuoteUpdateDto(string Text);
