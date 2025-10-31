@@ -41,7 +41,7 @@ export class BooksListComponent {
     if (!confirm(`Delete "${b.title}"?`)) return;
     this.loading = true;
     this.api.remove(b.id).subscribe({
-      next: () => this.load(),
+      next: () => {this.load(); this.toast.success('Book deleted'); },
       error: () => { this.loading = false; this.error = 'Failed to delete'; this.toast.error('Delete failed'); }
     });
   }
