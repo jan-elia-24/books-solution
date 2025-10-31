@@ -84,11 +84,9 @@ var app = builder.Build();
 app.UseCors("web");
 // app.UseHttpsRedirection(); 
 
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
 app.UseAuthentication();
 app.UseAuthorization();
