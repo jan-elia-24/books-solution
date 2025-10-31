@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Component } from '@angular/core';
 import { BooksService, BookCreate } from '../../core/books';
+import { ToastService } from '../../core/toast';
 
 @Component({
   selector: 'app-book-form',
@@ -21,7 +22,8 @@ export class BookFormComponent {
   constructor(
     private books: BooksService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
@@ -34,25 +36,41 @@ export class BookFormComponent {
         next: b => this.model = {
           title: b.title, author: b.author, publishedDate: b.publishedDate ?? undefined
         },
-        error: () => this.error = 'Failed to load book',
+        error: () => { this.error = 'Failed to load book'; this.toast.error('Load failed'); },
         complete: () => this.loading = false
       });
     }
   }
 
   save() {
-    this.loading = true; this.error = '';
-    const done = () => this.router.navigateByUrl('/books');
-    if (this.isEdit && this.id) {
-      this.books.update(this.id, this.model).subscribe({
-        next: done, error: () => { this.error = 'Failed to save'; this.loading = false; },
-        complete: () => this.loading = false
-      });
-    } else {
-      this.books.create(this.model).subscribe({
-        next: done, error: () => { this.error = 'Failed to save'; this.loading = false; },
-        complete: () => this.loading = false
-      });
-    }
+  this.error = '';
+  const title = (this.model.title || '').trim();
+  const author = (this.model.author || '').trim();
+  if (!title || !author) {
+    this.toast.error('Title and author are required');
+    return;
   }
+
+  const payload = {
+    title,
+    author,
+    publishedDate: this.model.publishedDate || null
+  };
+
+  this.loading = true;
+  const done = () => { this.loading = false; this.router.navigateByUrl('/books'); };
+  const fail = () => { this.loading = false; this.toast.error('Save failed'); };
+
+  if (this.isEdit && this.id) {
+    this.books.update(this.id, payload).subscribe({
+      next: () => { this.toast.success('Book updated'); done(); },
+      error: () => { this.error = 'Failed to save'; fail(); }
+    });
+  } else {
+    this.books.create(payload).subscribe({
+      next: () => { this.toast.success('Book created'); done(); },
+      error: () => { this.error = 'Failed to save'; fail(); }
+    });
+  }
+}
 }

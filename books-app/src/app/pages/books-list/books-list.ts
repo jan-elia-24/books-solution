@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BooksService, Book } from '../../core/books'; 
 import { RouterLink } from '@angular/router';
+import { ToastService } from '../../core/toast';
+
 
 @Component({
   selector: 'app-books-list',
@@ -15,17 +17,22 @@ export class BooksListComponent {
   loading = false;
   error = '';
 
-  constructor(private api: BooksService) {}
+  constructor(private api: BooksService, private toast: ToastService) {}
 
   ngOnInit() {
-    this.load();
+    this.loading = true;
+    this.api.list().subscribe({
+      next: res => this.books = res,
+      error: () => { this.error = 'Failed to load books'; this.toast.error('Load failed'); },
+      complete: () => this.loading = false
+    });
   }
 
   private load() {
     this.loading = true; this.error = '';
     this.api.list().subscribe({
       next: res => this.books = res,
-      error: () => this.error = 'Failed to load books',
+      error: () => { this.error = 'Failed to load books'; this.toast.error('Load failed'); },
       complete: () => this.loading = false
     });
   }
@@ -35,7 +42,7 @@ export class BooksListComponent {
     this.loading = true;
     this.api.remove(b.id).subscribe({
       next: () => this.load(),
-      error: () => { this.loading = false; this.error = 'Failed to delete'; }
+      error: () => { this.loading = false; this.error = 'Failed to delete'; this.toast.error('Delete failed'); }
     });
   }
 

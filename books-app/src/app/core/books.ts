@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth';
 
 export interface Book { id: number; title: string; author: string; publishedDate?: string; }
-export interface BookCreate { title: string; author: string; publishedDate?: string; }
+export interface BookCreate { title: string; author: string; publishedDate?: string | null; }
 
 @Injectable({ providedIn: 'root' })
 export class BooksService {
