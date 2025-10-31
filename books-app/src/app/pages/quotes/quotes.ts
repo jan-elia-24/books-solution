@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { QuotesService, Quote } from '../../core/quotes';
+import { ToastService } from '../../core/toast';
 
 @Component({
   selector: 'app-quotes',
@@ -20,7 +21,7 @@ export class QuotesComponent {
   editingId: number | null = null;
   editText = '';
 
-  constructor(private api: QuotesService) {}
+  constructor(private api: QuotesService, private toast: ToastService) {}
   ngOnInit() { this.load(); }
 
   load() {
@@ -37,8 +38,8 @@ export class QuotesComponent {
     if (!text) return;
     this.loading = true; this.error = '';
     this.api.create(text).subscribe({
-      next: () => { this.newText = ''; this.load(); },
-      error: () => { this.error = 'Failed to add quote'; this.loading = false; }
+      next: () => { this.newText = ''; this.load(); this.toast.success('Quote added');},
+      error: () => { this.error = 'Failed to add quote'; this.loading = false; this.toast.error('Add failed');}
     });
   }
 
@@ -55,16 +56,16 @@ export class QuotesComponent {
     if (!text) return;
     this.loading = true; this.error = '';
     this.api.update(q.id, text).subscribe({
-      next: () => { this.editingId = null; this.editText = ''; this.load(); },
-      error: () => { this.error = 'Failed to update quote'; this.loading = false; }
+      next: () => { this.editingId = null; this.editText = ''; this.load(); this.toast.success('Quote updated'); },
+      error: () => { this.error = 'Failed to update quote'; this.loading = false; this.toast.error('Update failed'); }
     });
   }
   delete(q: Quote) {
     if (!confirm('Delete this quote?')) return;
     this.loading = true; this.error = '';
     this.api.remove(q.id).subscribe({
-      next: () => this.load(),
-      error: () => { this.error = 'Failed to delete quote'; this.loading = false; }
+      next: () => { this.load(); this.toast.success('Quote deleted'); },
+      error: () => { this.error = 'Failed to delete quote'; this.loading = false; this.toast.error('Delete failed'); }
     });
   }
 
