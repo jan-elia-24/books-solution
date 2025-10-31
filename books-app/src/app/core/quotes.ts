@@ -9,16 +9,29 @@ export interface Quote {
   owner: string;
 }
 
-export interface QuoteCreate { text: string; }
+export interface QuoteCreate {
+  text: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class QuotesService {
   constructor(private http: HttpClient, private auth: AuthService) {}
-  private get base() { return `${this.auth.apiBase}/api/quotes`; }
+  private get base() {
+    return `${this.auth.apiBase}/api/quotes`;
+  }
 
-  list(): Observable<Quote[]> { return this.http.get<Quote[]>(this.base); }
+  list(): Observable<Quote[]> {
+    return this.http.get<Quote[]>(this.base);
+  }
   create(text: string): Observable<Quote> {
     return this.http.post<Quote>(this.base, { text } as QuoteCreate);
   }
-  // (update, delete) 
+  
+  // (update, delete)
+  update(id: number, text: string): Observable<Quote> {
+    return this.http.put<Quote>(`${this.base}/${id}`, { text } as QuoteCreate);
+  }
+  remove(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
+  }
 }

@@ -16,18 +16,19 @@ export class QuotesComponent {
   error = '';
   newText = '';
 
+  // edit-state
+  editingId: number | null = null;
+  editText = '';
+
   constructor(private api: QuotesService) {}
-  trackById = (_: number, q: Quote) => q.id;
-
-
   ngOnInit() { this.load(); }
 
   load() {
     this.loading = true; this.error = '';
     this.api.list().subscribe({
       next: res => this.quotes = res,
-      error: () => { this.error = 'Failed to load quotes'; },
-      complete: () => { this.loading = false; }
+      error: () => this.error = 'Failed to load quotes',
+      complete: () => this.loading = false
     });
   }
 
@@ -40,4 +41,32 @@ export class QuotesComponent {
       error: () => { this.error = 'Failed to add quote'; this.loading = false; }
     });
   }
+
+  startEdit(q: Quote) {
+    this.editingId = q.id;
+    this.editText = q.text;
+  }
+  cancelEdit() {
+    this.editingId = null;
+    this.editText = '';
+  }
+  saveEdit(q: Quote) {
+    const text = (this.editText || '').trim();
+    if (!text) return;
+    this.loading = true; this.error = '';
+    this.api.update(q.id, text).subscribe({
+      next: () => { this.editingId = null; this.editText = ''; this.load(); },
+      error: () => { this.error = 'Failed to update quote'; this.loading = false; }
+    });
+  }
+  delete(q: Quote) {
+    if (!confirm('Delete this quote?')) return;
+    this.loading = true; this.error = '';
+    this.api.remove(q.id).subscribe({
+      next: () => this.load(),
+      error: () => { this.error = 'Failed to delete quote'; this.loading = false; }
+    });
+  }
+
+  trackById = (_: number, q: Quote) => q.id;
 }

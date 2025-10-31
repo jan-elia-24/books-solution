@@ -6,7 +6,7 @@
   <!-- Add form -->
   <form class="input-group mb-3" (ngSubmit)="add()">
     <input class="form-control" placeholder="Write a new quote…" [(ngModel)]="newText" name="text">
-    <button class="btn btn-primary" [disabled]="loading || !newText?.trim()">
+    <button class="btn btn-primary" [disabled]="loading || !newText.trim()">
       <i class="fa fa-plus me-1"></i>Add
     </button>
   </form>
@@ -29,9 +29,30 @@
 
   <!-- List -->
   <ul *ngIf="!loading && !error && quotes.length" class="list-group shadow-sm">
-    <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let q of quotes; trackBy: trackById">
-      <div class="me-3">{{ q.text }}</div>
-      <!-- Edit/Delete knappar läggs i nästa steg -->
+    <li class="list-group-item" *ngFor="let q of quotes; trackBy: trackById">
+      <!-- View mode -->
+      <div class="d-flex justify-content-between align-items-center" *ngIf="editingId !== q.id">
+        <div class="me-3">{{ q.text }}</div>
+        <div class="btn-group">
+          <button class="btn btn-outline-secondary btn-sm" (click)="startEdit(q)">
+            <i class="fa fa-pen"></i> Edit
+          </button>
+          <button class="btn btn-outline-danger btn-sm" (click)="delete(q)">
+            <i class="fa fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+
+      <!-- Edit mode -->
+      <form class="d-flex align-items-center gap-2" *ngIf="editingId === q.id" (ngSubmit)="saveEdit(q)">
+        <input class="form-control" [(ngModel)]="editText" name="editText-{{q.id}}">
+        <button class="btn btn-primary btn-sm" [disabled]="!editText.trim()">
+          <i class="fa fa-save"></i> Save
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" (click)="cancelEdit()">
+          Cancel
+        </button>
+      </form>
     </li>
   </ul>
 </div>
