@@ -63,7 +63,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("web", p => p
-        .WithOrigins("http://localhost:4200", "https://bookbreeze.vercel.app") 
+        .WithOrigins("http://localhost:4200", "https://bookbreeze-rust.vercel.app")
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
