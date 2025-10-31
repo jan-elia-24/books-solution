@@ -11,7 +11,7 @@ import { ToastService, Toast } from '../../core/toast';
 })
 
 export class ToastsComponent {
-  toasts$; // Deklarera utan initiering
+  toasts$; 
 
   constructor(private toast: ToastService) {
     this.toasts$ = this.toast.toasts$; 

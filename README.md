@@ -13,6 +13,13 @@ A simple full‑stack example with an Angular frontend and a .NET 9 Minimal API 
 - .NET 9 SDK
 - Angular CLI (`npm i -g @angular/cli`)
 
+## Features
+- User authentication (login/register with JWT)
+- Books & Quotes CRUD with ownership
+- Toast notifications for user feedback  
+- Responsive UI with dark/light mode
+- Deployed full-stack (Vercel + Render)
+
 ## Run locally
 **Backend**
 ```bash
@@ -28,12 +35,10 @@ ng serve
 ```
 App: `http://localhost:4200`
 
-## Login
-Use the demo credentials:
-```
-username: admin
-password: pass123
-```
+## Updated Login Options
+Now supports both:
+- Demo account: `admin` / `pass123`
+- Registered users: Create your own account via Register page
 
 ## Notes
 - All CRUD endpoints require a valid JWT.
